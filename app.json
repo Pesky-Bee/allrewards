@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "All Rewards",
+    "slug": "all-rewards",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4CAF50"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.allrewards.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "All Rewards uses your location to automatically show the right reward card when you're at a store.",
+        "NSPhotoLibraryUsageDescription": "All Rewards needs access to your photos to add reward card images."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4CAF50"
+      },
+      "package": "com.allrewards.app",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-asset",
+      "expo-brightness",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "PORTRAIT_UP"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "All Rewards uses your location to automatically show the right reward card when you're at a store."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "All Rewards needs access to your photos to add reward card images."
+        }
+      ]
+    ],
+    "scheme": "allrewards",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
+  }
+}
