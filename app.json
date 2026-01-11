@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#4CAF50"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.allrewards.app",
@@ -27,8 +29,10 @@
       },
       "package": "com.allrewards.app",
       "permissions": [
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.WRITE_SETTINGS",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -60,8 +64,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "76e1e82a-4759-4cd9-9f09-c70478c3ddf5"
       }
-    }
+    },
+    "owner": "danmoss"
   }
 }
