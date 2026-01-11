@@ -45,15 +45,6 @@ A simple, privacy-focused mobile app for managing your reward cards. Upload scre
    - Scan the QR code with Expo Go (Android) or Camera app (iOS)
    - Or press `a` for Android emulator, `i` for iOS simulator
 
-### Adding App Icons
-
-Replace the placeholder files in `assets/`:
-- `icon.png` - 1024x1024px app icon
-- `splash.png` - 1284x2778px splash screen
-- `adaptive-icon.png` - 1024x1024px Android adaptive icon
-
-Recommended design: Coral (#FF6B6B) accent on dark navy (#1A1A2E) background.
-
 ## Publishing to App Stores
 
 ### Setup EAS Build
