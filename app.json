@@ -41,6 +41,8 @@
         "expo-build-properties",
         {
           "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
             "kotlinVersion": "1.9.25",
             "extraProguardRules": "-keep class com.facebook.react.** { *; }"
           }
