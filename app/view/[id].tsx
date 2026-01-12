@@ -162,6 +162,7 @@ export default function ViewCardScreen() {
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md }]}>
         <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={Colors.text} />
+          <Text style={styles.headerButtonLabel}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle} numberOfLines={1}>
           {card.storeName}
@@ -171,6 +172,7 @@ export default function ViewCardScreen() {
           onPress={() => router.push(`/edit/${card.id}`)}
         >
           <Ionicons name="create-outline" size={22} color={Colors.primary} />
+          <Text style={styles.headerButtonLabel}>Edit</Text>
         </TouchableOpacity>
       </View>
 
@@ -201,38 +203,7 @@ export default function ViewCardScreen() {
         </Text>
       </View>
 
-      {/* Quick Actions */}
-      <View style={[styles.actions, { paddingBottom: insets.bottom + Spacing.lg }]}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={toggleFullscreen}
-        >
-          <View style={[styles.actionIcon, { backgroundColor: Colors.primary + '15' }]}>
-            <Ionicons name="expand" size={24} color={Colors.primary} />
-          </View>
-          <Text style={styles.actionLabel}>Fullscreen</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => router.push(`/edit/${card.id}`)}
-        >
-          <View style={[styles.actionIcon, { backgroundColor: Colors.cardBlue + '15' }]}>
-            <Ionicons name="create" size={24} color={Colors.cardBlue} />
-          </View>
-          <Text style={styles.actionLabel}>Edit</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={() => router.push('/cards')}
-        >
-          <View style={[styles.actionIcon, { backgroundColor: Colors.accent + '15' }]}>
-            <Ionicons name="wallet" size={24} color={Colors.accent} />
-          </View>
-          <Text style={styles.actionLabel}>All Cards</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Quick Actions removed per request */}
     </View>
   );
 }
@@ -296,6 +267,11 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.full,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 2,
+  },
+  headerButtonLabel: {
+    fontSize: Typography.sizes.xs,
+    color: Colors.textSecondary,
   },
   headerTitle: {
     flex: 1,

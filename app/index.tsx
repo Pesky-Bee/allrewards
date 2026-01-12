@@ -27,6 +27,8 @@ export default function HomeScreen() {
   const { location, loading: locationLoading, refreshLocation, hasPermission, requestPermission, detectNearbyCardByPlace } = useLocation();
   const [nearbyCard, setNearbyCard] = useState<RewardCard | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [nearbyChecked, setNearbyChecked] = useState(false);
+  const searching = !nearbyChecked || cardsLoading || locationLoading;
 
   // Refresh cards and location every time the screen comes into focus
   useFocusEffect(
@@ -41,8 +43,11 @@ export default function HomeScreen() {
   // Detect nearby card based on place name (reverse geocoding)
   useEffect(() => {
     const detectNearby = async () => {
+      setNearbyChecked(false);
+
       if (cards.length === 0) {
         setNearbyCard(null);
+        setNearbyChecked(true);
         return;
       }
 
@@ -53,6 +58,8 @@ export default function HomeScreen() {
       } else {
         setNearbyCard(null);
       }
+
+      setNearbyChecked(true);
     };
 
     detectNearby();
@@ -119,37 +126,38 @@ export default function HomeScreen() {
 
 
         {/* Nearby Card Section */}
-        {nearbyCard ? (
+        {searching ? (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>📍 Nearby Store Detected</Text>
-            <TouchableOpacity
-              style={styles.featuredCard}
-              onPress={() => router.push(`/view/${nearbyCard.id}?fullscreen=true`)}
-            >
-              <Image
-                source={{ uri: nearbyCard.imageUri }}
-                style={styles.featuredCardImage}
-                resizeMode="contain"
-              />
-              <View style={styles.featuredCardOverlay}>
-                <Text style={styles.featuredCardName}>{nearbyCard.storeName}</Text>
-                <Text style={styles.featuredCardHint}>Tap to show card →</Text>
-              </View>
-            </TouchableOpacity>
+            <Text style={styles.sectionTitle}>🔍 Searching for nearby stores...</Text>
+            <Text style={styles.sectionSubtitle}>Checking your location and cards</Text>
           </View>
-        ) : cards.length > 0 ? (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
-              {hasPermission && location
-                ? '🔍 No nearby stores detected'
-                : '💳 Your Cards'}
-            </Text>
-            <Text style={styles.sectionSubtitle}>
-              {hasPermission && location
-                ? 'Pull down to refresh or select a card below'
-                : 'Select a card to view'}
-            </Text>
-          </View>
+        ) : hasPermission && location ? (
+          nearbyCard ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>📍 Nearby Store Detected</Text>
+              <TouchableOpacity
+                style={styles.featuredCard}
+                onPress={() => router.push(`/view/${nearbyCard.id}?fullscreen=true`)}
+              >
+                <Image
+                  source={{ uri: nearbyCard.imageUri }}
+                  style={styles.featuredCardImage}
+                  resizeMode="contain"
+                />
+                <View style={styles.featuredCardOverlay}>
+                  <Text style={styles.featuredCardName}>{nearbyCard.storeName}</Text>
+                  <Text style={styles.featuredCardHint}>Tap to show card →</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>🔍 No nearby stores detected</Text>
+              <Text style={styles.sectionSubtitle}>
+                Pull down to refresh or select a card below
+              </Text>
+            </View>
+          )
         ) : null}
 
         {/* Cards Grid */}
