@@ -18,7 +18,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors, Spacing, BorderRadius, Typography, Shadows } from '../../src/constants/theme';
 import { useCards } from '../../src/hooks/useCards';
-import { useLocation } from '../../src/hooks/useLocation';
 import { StorageService } from '../../src/services/storage';
 import { KNOWN_STORES, RewardCard } from '../../src/types';
 
@@ -27,16 +26,12 @@ export default function EditCardScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
   const { updateCard, deleteCard } = useCards();
-  const { location } = useLocation();
   
   const [card, setCard] = useState<RewardCard | null>(null);
   const [storeName, setStoreName] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [saveLocation, setSaveLocation] = useState(false);
-  const [manualLat, setManualLat] = useState('');
-  const [manualLng, setManualLng] = useState('');
 
   useEffect(() => {
     loadCard();
@@ -51,12 +46,6 @@ export default function EditCardScreen() {
         setCard(loadedCard);
         setStoreName(loadedCard.storeName);
         setImageUri(loadedCard.imageUri);
-        const hasLocation = loadedCard.storeLocations && loadedCard.storeLocations.length > 0;
-        setSaveLocation(hasLocation);
-        if (hasLocation) {
-          setManualLat(loadedCard.storeLocations![0].latitude.toString());
-          setManualLng(loadedCard.storeLocations![0].longitude.toString());
-        }
       }
     } catch (error) {
       console.error('Error loading card:', error);
@@ -103,23 +92,10 @@ export default function EditCardScreen() {
 
     setSaving(true);
     try {
-      // Use manual coordinates if provided, otherwise use current GPS location
-      let storeLocations = card?.storeLocations;
-      
-      if (manualLat && manualLng) {
-        const lat = parseFloat(manualLat);
-        const lng = parseFloat(manualLng);
-        if (!isNaN(lat) && !isNaN(lng)) {
-          storeLocations = [{ latitude: lat, longitude: lng }];
-        }
-      } else if (saveLocation && location) {
-        storeLocations = [{ latitude: location.latitude, longitude: location.longitude }];
-      }
-
       await updateCard(id, {
         storeName: storeName.trim(),
         imageUri,
-        storeLocations,
+        storeLocations: undefined, // no stored coordinates; detection uses place name
       });
       router.back();
     } catch (error) {
@@ -244,75 +220,6 @@ export default function EditCardScreen() {
               </TouchableOpacity>
             ))}
           </View>
-        </View>
-
-        {/* Update Location Toggle */}
-        {location && (
-          <TouchableOpacity
-            style={styles.locationToggle}
-            onPress={() => setSaveLocation(!saveLocation)}
-          >
-            <View style={[
-              styles.locationToggleIcon,
-              saveLocation && styles.locationToggleIconActive
-            ]}>
-              <Ionicons
-                name="location"
-                size={20}
-                color={saveLocation ? Colors.textOnPrimary : Colors.accent}
-              />
-            </View>
-            <View style={styles.locationToggleText}>
-              <Text style={styles.locationToggleTitle}>
-                Update to current location
-              </Text>
-              <Text style={styles.locationToggleSubtitle}>
-                Replace saved location with your current position
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.checkbox,
-                saveLocation && styles.checkboxActive,
-              ]}
-            >
-              {saveLocation && (
-                <Ionicons name="checkmark" size={14} color={Colors.textOnPrimary} />
-              )}
-            </View>
-          </TouchableOpacity>
-        )}
-
-        {/* Manual Location Entry */}
-        <View style={styles.inputSection}>
-          <Text style={styles.label}>Store Location (Coordinates)</Text>
-          <View style={styles.coordsRow}>
-            <View style={styles.coordInput}>
-              <Text style={styles.coordLabel}>Latitude</Text>
-              <TextInput
-                style={styles.input}
-                value={manualLat}
-                onChangeText={setManualLat}
-                placeholder="53.189600"
-                placeholderTextColor={Colors.textMuted}
-                keyboardType="numeric"
-              />
-            </View>
-            <View style={styles.coordInput}>
-              <Text style={styles.coordLabel}>Longitude</Text>
-              <TextInput
-                style={styles.input}
-                value={manualLng}
-                onChangeText={setManualLng}
-                placeholder="-6.123695"
-                placeholderTextColor={Colors.textMuted}
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
-          <Text style={styles.coordHint}>
-            💡 Get coordinates from Google Maps by long-pressing on a location
-          </Text>
         </View>
 
         {/* Save Button */}
@@ -491,53 +398,6 @@ const styles = StyleSheet.create({
     color: Colors.textOnPrimary,
     fontWeight: Typography.weights.medium,
   },
-  locationToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.lg,
-    gap: Spacing.md,
-    ...Shadows.sm,
-  },
-  locationToggleIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.accent + '20',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  locationToggleIconActive: {
-    backgroundColor: Colors.accent,
-  },
-  locationToggleText: {
-    flex: 1,
-  },
-  locationToggleTitle: {
-    fontSize: Typography.sizes.md,
-    color: Colors.text,
-    fontWeight: Typography.weights.medium,
-  },
-  locationToggleSubtitle: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    marginTop: 2,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: BorderRadius.sm,
-    borderWidth: 2,
-    borderColor: Colors.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
   saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -571,22 +431,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.md,
     fontWeight: Typography.weights.medium,
     color: Colors.error,
-  },
-  coordsRow: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-  },
-  coordInput: {
-    flex: 1,
-  },
-  coordLabel: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    marginBottom: Spacing.xs,
-  },
-  coordHint: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    marginTop: Spacing.sm,
   },
 });

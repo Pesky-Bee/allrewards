@@ -18,19 +18,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors, Spacing, BorderRadius, Typography, Shadows } from '../src/constants/theme';
 import { useCards } from '../src/hooks/useCards';
-import { useLocation } from '../src/hooks/useLocation';
 import { KNOWN_STORES } from '../src/types';
 
 export default function AddCardScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { addCard } = useCards();
-  const { location } = useLocation();
   
   const [storeName, setStoreName] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [saveLocation, setSaveLocation] = useState(false);
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -71,9 +68,7 @@ export default function AddCardScreen() {
       await addCard({
         storeName: storeName.trim(),
         imageUri,
-        storeLocations: saveLocation && location
-          ? [{ latitude: location.latitude, longitude: location.longitude }]
-          : undefined,
+        storeLocations: undefined, // no stored coordinates; detection uses place name
       });
       router.back();
     } catch (error) {
@@ -162,43 +157,6 @@ export default function AddCardScreen() {
             ))}
           </View>
         </View>
-
-        {/* Save Location Toggle */}
-        {location && (
-          <TouchableOpacity
-            style={styles.locationToggle}
-            onPress={() => setSaveLocation(!saveLocation)}
-          >
-            <View style={[
-              styles.locationToggleIcon,
-              saveLocation && styles.locationToggleIconActive
-            ]}>
-              <Ionicons
-                name="location"
-                size={20}
-                color={saveLocation ? Colors.textOnPrimary : Colors.accent}
-              />
-            </View>
-            <View style={styles.locationToggleText}>
-              <Text style={styles.locationToggleTitle}>
-                Save current location
-              </Text>
-              <Text style={styles.locationToggleSubtitle}>
-                Auto-show this card when you're at this store
-              </Text>
-            </View>
-            <View
-              style={[
-                styles.checkbox,
-                saveLocation && styles.checkboxActive,
-              ]}
-            >
-              {saveLocation && (
-                <Ionicons name="checkmark" size={14} color={Colors.textOnPrimary} />
-              )}
-            </View>
-          </TouchableOpacity>
-        )}
 
         {/* Save Button */}
         <TouchableOpacity
@@ -336,53 +294,6 @@ const styles = StyleSheet.create({
   storeChipTextActive: {
     color: Colors.textOnPrimary,
     fontWeight: Typography.weights.medium,
-  },
-  locationToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.lg,
-    gap: Spacing.md,
-    ...Shadows.sm,
-  },
-  locationToggleIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.accent + '20',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  locationToggleIconActive: {
-    backgroundColor: Colors.accent,
-  },
-  locationToggleText: {
-    flex: 1,
-  },
-  locationToggleTitle: {
-    fontSize: Typography.sizes.md,
-    color: Colors.text,
-    fontWeight: Typography.weights.medium,
-  },
-  locationToggleSubtitle: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.textMuted,
-    marginTop: 2,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: BorderRadius.sm,
-    borderWidth: 2,
-    borderColor: Colors.border,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
   },
   saveButton: {
     flexDirection: 'row',
