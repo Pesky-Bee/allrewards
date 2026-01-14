@@ -3,31 +3,20 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet } from 'react-native';
 import { Colors } from '../src/constants/theme';
-import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
-// Prevent auto-hide until fonts load
+// Prevent auto-hide until app is ready
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    // Ensure Ionicons font is bundled and loaded (fixes missing icons in release)
-    ...require('@expo/vector-icons/build/Fontisto').default,
-    ...require('@expo/vector-icons/build/FontAwesome').default,
-    ...require('@expo/vector-icons/build/AntDesign').default,
-    ...require('@expo/vector-icons/build/MaterialIcons').default,
-    ...require('@expo/vector-icons/build/Ionicons').default,
-  });
-
   useEffect(() => {
-    if (fontsLoaded) {
+    // Hide splash screen after a brief delay to ensure app is mounted
+    const timer = setTimeout(() => {
       SplashScreen.hideAsync().catch(() => {});
-    }
-  }, [fontsLoaded]);
+    }, 100);
 
-  if (!fontsLoaded) {
-    return null;
-  }
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <View style={styles.container}>
