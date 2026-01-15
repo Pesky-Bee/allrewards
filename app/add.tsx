@@ -51,7 +51,8 @@ export default function AddCardScreen() {
         setImageUri(result.assets[0].uri);
       }
     } catch (error) {
-      Alert.alert('Error', 'Could not open your photos. Please try again.');
+      console.error('Image picker error:', error);
+      Alert.alert('Error', `Could not open your photos: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
